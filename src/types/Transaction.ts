@@ -1,3 +1,4 @@
+// Transaction.ts
 export interface Transaction {
   id: number;
   transactionId?: string;
@@ -11,4 +12,8 @@ export interface Transaction {
   category?: string;
   type?: string;
   currency?: string;
+  isActive?: boolean;
+  transactionType?: string;
+  isRecurring?: boolean;
+  // ... Add other properties as needed
 }

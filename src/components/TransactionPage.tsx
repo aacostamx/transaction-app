@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   TextField,
@@ -6,15 +6,15 @@ import {
   Snackbar,
   Alert,
   Typography,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import TransactionTable from './TransactionTable';
-import AddTransaction from './AddTransaction';
-import EditTransaction from './EditTransaction';
-import { Transaction } from '../types/Transaction';
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import TransactionTable from "./TransactionTable";
+import AddTransaction from "./AddTransaction";
+import EditTransaction from "./EditTransaction";
+import { Transaction } from "../types/Transaction";
 
 const TransactionPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(
     null
   );
@@ -22,8 +22,8 @@ const TransactionPage: React.FC = () => {
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
-    severity: 'success' | 'error';
-  }>({ open: false, message: '', severity: 'success' });
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
 
   const handleSearchChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -50,9 +50,9 @@ const TransactionPage: React.FC = () => {
     setSnackbar({
       open: true,
       message: editTransaction
-        ? 'Transaction updated successfully'
-        : 'Transaction created successfully',
-      severity: 'success',
+        ? "Transaction updated successfully"
+        : "Transaction created successfully",
+      severity: "success",
     });
     setAdding(false);
     setEditTransaction(null);
@@ -63,7 +63,7 @@ const TransactionPage: React.FC = () => {
     event?: React.SyntheticEvent | Event,
     reason?: string
   ) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbar({ ...snackbar, open: false });
@@ -83,6 +83,8 @@ const TransactionPage: React.FC = () => {
             mb={2}
           >
             <TextField
+              size="small"
+              style={{ width: 300 }}
               label="Search Transactions"
               variant="outlined"
               value={searchQuery}
@@ -122,7 +124,7 @@ const TransactionPage: React.FC = () => {
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbar.severity}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {snackbar.message}
         </Alert>

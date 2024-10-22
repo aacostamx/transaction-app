@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHead,
@@ -12,10 +12,10 @@ import {
   Box,
   TableSortLabel,
   TablePagination,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { Transaction } from '../types/Transaction';
-import { getTransactions } from '../services/api';
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import { Transaction } from "../types/Transaction";
+import { getTransactions } from "../services/api";
 
 interface Props {
   searchQuery: string;
@@ -23,14 +23,21 @@ interface Props {
   refresh: boolean;
 }
 
-const TransactionTable: React.FC<Props> = ({ searchQuery, onEdit, refresh }) => {
+const TransactionTable: React.FC<Props> = ({
+  searchQuery,
+  onEdit,
+  refresh,
+}) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    Transaction[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [sortField, setSortField] = useState<keyof Transaction>('transactionId');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] =
+    useState<keyof Transaction>("transactionId");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Fetch data on component mount or when searchQuery or refresh changes
   useEffect(() => {
@@ -40,7 +47,7 @@ const TransactionTable: React.FC<Props> = ({ searchQuery, onEdit, refresh }) => 
         const response = await getTransactions(searchQuery);
         setTransactions(response.data);
       } catch (error) {
-        console.error('Error fetching transactions:', error);
+        console.error("Error fetching transactions:", error);
       }
       setLoading(false);
     };
@@ -59,26 +66,26 @@ const TransactionTable: React.FC<Props> = ({ searchQuery, onEdit, refresh }) => 
 
       // Handle undefined or null values
       if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return sortOrder === 'asc' ? -1 : 1;
-      if (bValue == null) return sortOrder === 'asc' ? 1 : -1;
+      if (aValue == null) return sortOrder === "asc" ? -1 : 1;
+      if (bValue == null) return sortOrder === "asc" ? 1 : -1;
 
       // Handle date fields
-      if (sortField === 'date' || sortField === 'createdDate') {
+      if (sortField === "date" || sortField === "createdDate") {
         const aDate = new Date(aValue as string);
         const bDate = new Date(bValue as string);
-        return sortOrder === 'asc'
+        return sortOrder === "asc"
           ? aDate.getTime() - bDate.getTime()
           : bDate.getTime() - aDate.getTime();
       }
 
       // Handle numeric fields
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       }
 
       // Handle string fields
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortOrder === 'asc'
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return sortOrder === "asc"
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       }
@@ -91,8 +98,8 @@ const TransactionTable: React.FC<Props> = ({ searchQuery, onEdit, refresh }) => 
   }, [transactions, sortField, sortOrder]);
 
   const handleSort = (field: keyof Transaction) => {
-    const isAsc = sortField === field && sortOrder === 'asc';
-    setSortOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = sortField === field && sortOrder === "asc";
+    setSortOrder(isAsc ? "desc" : "asc");
     setSortField(field);
   };
 
@@ -120,49 +127,49 @@ const TransactionTable: React.FC<Props> = ({ searchQuery, onEdit, refresh }) => 
         <>
           <TableContainer>
             <Table>
-              <TableHead>
+              <TableHead sx={{ backgroundColor: "#f0f0f0" }}>
                 <TableRow>
                   <TableCell>
                     <TableSortLabel
-                      active={sortField === 'transactionId'}
+                      active={sortField === "transactionId"}
                       direction={sortOrder}
-                      onClick={() => handleSort('transactionId')}
+                      onClick={() => handleSort("transactionId")}
                     >
                       Transaction ID
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={sortField === 'date'}
+                      active={sortField === "date"}
                       direction={sortOrder}
-                      onClick={() => handleSort('date')}
+                      onClick={() => handleSort("date")}
                     >
                       Date
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={sortField === 'amount'}
+                      active={sortField === "amount"}
                       direction={sortOrder}
-                      onClick={() => handleSort('amount')}
+                      onClick={() => handleSort("amount")}
                     >
                       Amount
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={sortField === 'status'}
+                      active={sortField === "status"}
                       direction={sortOrder}
-                      onClick={() => handleSort('status')}
+                      onClick={() => handleSort("status")}
                     >
                       Status
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={sortField === 'createdDate'}
+                      active={sortField === "createdDate"}
                       direction={sortOrder}
-                      onClick={() => handleSort('createdDate')}
+                      onClick={() => handleSort("createdDate")}
                     >
                       Created Date
                     </TableSortLabel>
@@ -213,4 +220,3 @@ const TransactionTable: React.FC<Props> = ({ searchQuery, onEdit, refresh }) => 
 };
 
 export default TransactionTable;
-
