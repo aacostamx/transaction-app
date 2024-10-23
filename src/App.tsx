@@ -1,12 +1,19 @@
-import React from 'react';
-import TransactionPage from './components/TransactionPage';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import TransactionPage from "./components/TransactionPage";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div>
-      <TransactionPage />
-    </div>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<TransactionPage />} />
+        </Routes>
+      </Router>
+    </LocalizationProvider>
   );
-}
+};
 
 export default App;
