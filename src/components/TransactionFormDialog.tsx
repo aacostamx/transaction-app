@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
@@ -34,7 +34,7 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
   onCancel,
   onSuccess,
 }) => {
-  const { control, handleSubmit } = useForm<Transaction>({
+  const { control, handleSubmit, reset } = useForm<Transaction>({
     defaultValues: model, // Default values for the form are provided from the model
   });
 
@@ -46,6 +46,14 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
 
   const handleNext = () => setActiveStep((prevStep) => prevStep + 1); // Move to the next step
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1); // Move to the previous step
+
+  // Reset form values whenever model or open state changes
+  useEffect(() => {
+    if (open) {
+      reset(model); // Reset form to the current model values
+      setActiveStep(0); // Reset to the first step
+    }
+  }, [model, open, reset]);
 
   // Function to handle form submission
   const onSubmit = (data: Transaction) => {
