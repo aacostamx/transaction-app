@@ -6,16 +6,21 @@ import {
   Snackbar,
   Alert,
   Typography,
+  IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import TransactionTable from "./TransactionTable";
 import { Transaction } from "../types/Transaction";
-import TransactionFormDialog from "./TransactionFormDialog"; // Import the new dialog form
+import TransactionFormDialog from "./TransactionFormDialog";
 import { createTransaction, updateTransaction } from "../services/api";
 
 const TransactionPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [editTransaction, setEditTransaction] = useState<Transaction | null>(null);
+  const [searchInput, setSearchInput] = useState<string>(""); // State for input field
+  const [searchQuery, setSearchQuery] = useState<string>(""); // State to trigger the search
+  const [editTransaction, setEditTransaction] = useState<Transaction | null>(
+    null
+  );
   const [adding, setAdding] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -25,9 +30,21 @@ const TransactionPage: React.FC = () => {
 
   const [refreshData, setRefreshData] = useState<boolean>(false);
 
-  // Handle Search Query
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchQuery(event.target.value);
+  // Handle Search Input Change
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(event.target.value);
+  };
+
+  // Handle Search Trigger
+  const handleSearch = () => {
+    setSearchQuery(searchInput);
+  };
+
+  // Handle Key Press in Search Input
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
   };
 
   // Handle Edit Transaction
@@ -94,7 +111,7 @@ const TransactionPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Transactions
       </Typography>
-      
+
       {/* Display the Transaction Table when not adding or editing */}
       {!adding && !editTransaction && (
         <>
@@ -104,14 +121,24 @@ const TransactionPage: React.FC = () => {
             alignItems="center"
             mb={2}
           >
-            <TextField
-              size="small"
-              style={{ width: 300 }}
-              label="Search Transactions"
-              variant="outlined"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
+            <Box display="flex" alignItems="center">
+              <TextField
+                size="small"
+                style={{ width: 300 }}
+                label="Search Transactions"
+                variant="outlined"
+                value={searchInput}
+                onChange={handleSearchChange}
+                onKeyPress={handleKeyPress} // Trigger search on Enter key
+              />
+              <IconButton
+                color="primary"
+                onClick={handleSearch}
+                aria-label="search"
+              >
+                <SearchIcon />
+              </IconButton>
+            </Box>
             <Button
               variant="contained"
               color="primary"
