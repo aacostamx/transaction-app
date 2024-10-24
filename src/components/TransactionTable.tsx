@@ -19,12 +19,14 @@ import { getTransactions } from "../services/api";
 
 interface Props {
   searchQuery: string;
+  searchTrigger: boolean;
   onEdit: (transaction: Transaction) => void;
   refresh: boolean;
 }
 
 const TransactionTable: React.FC<Props> = ({
   searchQuery,
+  searchTrigger,
   onEdit,
   refresh,
 }) => {
@@ -35,11 +37,9 @@ const TransactionTable: React.FC<Props> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [sortField, setSortField] =
-    useState<keyof Transaction>("transactionId");
+  const [sortField, setSortField] = useState<keyof Transaction | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  // Fetch data on component mount or when searchQuery or refresh changes
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -53,46 +53,41 @@ const TransactionTable: React.FC<Props> = ({
     };
 
     fetchData();
-  }, [searchQuery, refresh]);
+  }, [searchTrigger, refresh, searchQuery]);
 
-  // Update filtered transactions when transactions, sortField, or sortOrder change
   useEffect(() => {
     let data = [...transactions];
 
-    // Sorting
-    data.sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
+    if (sortField) {
+      data.sort((a, b) => {
+        let aValue = a[sortField];
+        let bValue = b[sortField];
 
-      // Handle undefined or null values
-      if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return sortOrder === "asc" ? -1 : 1;
-      if (bValue == null) return sortOrder === "asc" ? 1 : -1;
+        if (aValue == null && bValue == null) return 0;
+        if (aValue == null) return sortOrder === "asc" ? -1 : 1;
+        if (bValue == null) return sortOrder === "asc" ? 1 : -1;
 
-      // Handle date fields
-      if (sortField === "date" || sortField === "createdDate") {
-        const aDate = new Date(aValue as string);
-        const bDate = new Date(bValue as string);
-        return sortOrder === "asc"
-          ? aDate.getTime() - bDate.getTime()
-          : bDate.getTime() - aDate.getTime();
-      }
+        if (sortField === "date" || sortField === "createdDate") {
+          const aDate = new Date(aValue as string);
+          const bDate = new Date(bValue as string);
+          return sortOrder === "asc"
+            ? aDate.getTime() - bDate.getTime()
+            : bDate.getTime() - aDate.getTime();
+        }
 
-      // Handle numeric fields
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
-      }
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+        }
 
-      // Handle string fields
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return sortOrder === "asc"
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return sortOrder === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
 
-      // Default case
-      return 0;
-    });
+        return 0;
+      });
+    }
 
     setFilteredTransactions(data);
   }, [transactions, sortField, sortOrder]);

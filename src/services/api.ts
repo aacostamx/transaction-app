@@ -1,14 +1,14 @@
-import axios from 'axios';
-import { Transaction } from '../types/Transaction';
+import axios from "axios";
+import { Transaction } from "../types/Transaction";
 
 const api = axios.create({
-  baseURL: 'https://localhost:7039/api',
+  baseURL: "https://localhost:7039/api",
 });
 
 export const getTransactions = async (
   searchQuery: string
 ): Promise<{ data: Transaction[] }> => {
-  const response = await api.get('/Transactions', {
+  const response = await api.get("/Transactions", {
     params: {
       searchQuery,
     },
@@ -22,5 +22,9 @@ export const updateTransaction = async (transaction: Transaction) => {
 };
 
 export const createTransaction = async (transaction: Transaction) => {
-  await api.post('/Transactions', transaction);
+  await api.post("/Transactions", transaction);
+};
+
+export const getStatuses = async () => {
+  return await api.get("/Status");
 };

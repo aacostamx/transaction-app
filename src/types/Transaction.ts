@@ -1,4 +1,3 @@
-// Transaction.ts
 export interface Transaction {
   id: number;
   transactionId?: string;
@@ -15,5 +14,4 @@ export interface Transaction {
   isActive?: boolean;
   transactionType?: string;
   isRecurring?: boolean;
-  // ... Add other properties as needed
 }

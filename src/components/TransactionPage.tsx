@@ -5,8 +5,8 @@ import {
   Button,
   Snackbar,
   Alert,
-  Typography,
   IconButton,
+  Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -16,8 +16,9 @@ import TransactionFormDialog from "./TransactionFormDialog";
 import { createTransaction, updateTransaction } from "../services/api";
 
 const TransactionPage: React.FC = () => {
-  const [searchInput, setSearchInput] = useState<string>(""); // State for input field
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State to trigger the search
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchTrigger, setSearchTrigger] = useState<boolean>(false);
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(
     null
   );
@@ -30,53 +31,47 @@ const TransactionPage: React.FC = () => {
 
   const [refreshData, setRefreshData] = useState<boolean>(false);
 
-  // Handle Search Input Change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value);
   };
 
-  // Handle Search Trigger
   const handleSearch = () => {
     setSearchQuery(searchInput);
+    setSearchTrigger((prev) => !prev);
   };
 
-  // Handle Key Press in Search Input
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       handleSearch();
     }
   };
 
-  // Handle Edit Transaction
   const handleEditClick = (transaction: Transaction) => {
     setEditTransaction(transaction);
-    setAdding(false); // Close add mode when editing
+    setAdding(false);
   };
 
-  // Handle Add Transaction
   const handleAddClick = () => {
     setAdding(true);
-    setEditTransaction(null); // Close edit mode when adding
+    setEditTransaction(null);
   };
 
-  // Handle Cancel - Reset form and state
   const handleCancel = () => {
     setAdding(false);
-    setEditTransaction(null); // Close edit or add mode and go back to table
+    setEditTransaction(null);
   };
 
-  // Handle Success - After form submit (either Add or Edit)
   const handleSuccess = async (transaction: Transaction) => {
     try {
       if (editTransaction) {
-        await updateTransaction(transaction); // API call for updating a transaction
+        await updateTransaction(transaction);
         setSnackbar({
           open: true,
           message: "Transaction updated successfully",
           severity: "success",
         });
       } else {
-        await createTransaction(transaction); // API call for creating a transaction
+        await createTransaction(transaction);
         setSnackbar({
           open: true,
           message: "Transaction created successfully",
@@ -92,10 +87,9 @@ const TransactionPage: React.FC = () => {
     }
     setAdding(false);
     setEditTransaction(null);
-    setRefreshData((prev) => !prev); // Refresh the transaction table
+    setRefreshData((prev) => !prev);
   };
 
-  // Handle Snackbar Close
   const handleSnackbarClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -129,7 +123,7 @@ const TransactionPage: React.FC = () => {
                 variant="outlined"
                 value={searchInput}
                 onChange={handleSearchChange}
-                onKeyPress={handleKeyPress} // Trigger search on Enter key
+                onKeyPress={handleKeyPress}
               />
               <IconButton
                 color="primary"
@@ -150,16 +144,16 @@ const TransactionPage: React.FC = () => {
           </Box>
           <TransactionTable
             searchQuery={searchQuery}
+            searchTrigger={searchTrigger}
             onEdit={handleEditClick}
             refresh={refreshData}
           />
         </>
       )}
 
-      {/* Add Transaction Dialog */}
       <TransactionFormDialog
         model={{
-          id: 0, // Placeholder ID for new transaction
+          id: 0,
           transactionId: "",
           date: "",
           amount: 0,
@@ -180,7 +174,6 @@ const TransactionPage: React.FC = () => {
         onSuccess={handleSuccess}
       />
 
-      {/* Edit Transaction Dialog */}
       {editTransaction && (
         <TransactionFormDialog
           model={editTransaction}
@@ -190,7 +183,6 @@ const TransactionPage: React.FC = () => {
         />
       )}
 
-      {/* Snackbar for notifications */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
