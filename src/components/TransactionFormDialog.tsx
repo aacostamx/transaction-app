@@ -18,6 +18,8 @@ import {
   Box,
   Typography,
   Badge,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -27,6 +29,14 @@ import * as Yup from "yup"; // Import Yup
 import { yupResolver } from "@hookform/resolvers/yup"; // Import yupResolver
 import { Transaction } from "../types/Transaction";
 import { getStatuses } from "../services/api";
+
+// Import the nested editor dialogs
+import ChannelEditorDialog from "./ChannelEditorDialog";
+import TerritoryEditorDialog from "./TerritoryEditorDialog";
+import CompensationEditorDialog from "./CompensationEditorDialog";
+
+// Import icons
+import EditIcon from '@mui/icons-material/Edit';
 
 interface TransactionFormDialogProps {
   model: Transaction;
@@ -85,6 +95,16 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
   const [statuses, setStatuses] = useState<{ id: number; name: string }[]>([]);
   const fieldsPerGroup = 8;
 
+  // State for nested modals
+  const [openChannelEditor, setOpenChannelEditor] = useState(false);
+  const [openTerritoryEditor, setOpenTerritoryEditor] = useState(false);
+  const [openCompensationEditor, setOpenCompensationEditor] = useState(false);
+
+  // State to hold data from nested editors
+  const [channelData, setChannelData] = useState<any>(null);
+  const [territoryData, setTerritoryData] = useState<any>(null);
+  const [compensationData, setCompensationData] = useState<any>(null);
+
   // Fetch statuses when the dialog opens
   useEffect(() => {
     if (open) {
@@ -125,7 +145,16 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
   // Submit handler
   const onSubmit = (data: Transaction) => {
     console.log("Form Data Submitted:", data);
-    onSuccess(data);
+
+    // Include the data from nested editors
+    const combinedData = {
+      ...data,
+      channel: channelData,
+      territory: territoryData,
+      compensation: compensationData,
+    };
+
+    onSuccess(combinedData);
   };
 
   // Function to check which tabs have errors
@@ -315,6 +344,7 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
               );
             })}
           </Tabs>
+          {/* Render transaction field groups */}
           {fieldGroups.map((group, index) => (
             <TabPanel key={index} value={tabIndex} index={index}>
               <Grid container spacing={2}>
@@ -328,12 +358,80 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
           ))}
         </DialogContent>
         <DialogActions>
+          {/* Buttons for Editing Related Data */}
+          <Box flexGrow={1} display="flex" alignItems="center">
+            <Tooltip title="Edit Channel">
+              <IconButton
+                onClick={() => setOpenChannelEditor(true)}
+                color="primary"
+              >
+                <EditIcon />
+                <Typography variant="body2" style={{ marginLeft: 4 }}>
+                  Channel
+                </Typography>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit Territory">
+              <IconButton
+                onClick={() => setOpenTerritoryEditor(true)}
+                color="primary"
+              >
+                <EditIcon />
+                <Typography variant="body2" style={{ marginLeft: 4 }}>
+                  Territory
+                </Typography>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit Compensation">
+              <IconButton
+                onClick={() => setOpenCompensationEditor(true)}
+                color="primary"
+              >
+                <EditIcon />
+                <Typography variant="body2" style={{ marginLeft: 4 }}>
+                  Compensation
+                </Typography>
+              </IconButton>
+            </Tooltip>
+          </Box>
+          {/* Action Buttons */}
           <Button onClick={onCancel}>Cancel</Button>
           <Button type="submit" variant="contained" color="primary">
             Save
           </Button>
         </DialogActions>
       </form>
+
+      {/* Nested Editor Dialogs */}
+      <ChannelEditorDialog
+        open={openChannelEditor}
+        onClose={() => setOpenChannelEditor(false)}
+        onSave={(data) => {
+          setChannelData(data);
+          setOpenChannelEditor(false);
+        }}
+        initialData={channelData}
+      />
+
+      <TerritoryEditorDialog
+        open={openTerritoryEditor}
+        onClose={() => setOpenTerritoryEditor(false)}
+        onSave={(data) => {
+          setTerritoryData(data);
+          setOpenTerritoryEditor(false);
+        }}
+        initialData={territoryData}
+      />
+
+      <CompensationEditorDialog
+        open={openCompensationEditor}
+        onClose={() => setOpenCompensationEditor(false)}
+        onSave={(data) => {
+          setCompensationData(data);
+          setOpenCompensationEditor(false);
+        }}
+        initialData={compensationData}
+      />
     </Dialog>
   );
 };
